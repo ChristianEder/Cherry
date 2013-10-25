@@ -15,7 +15,7 @@ namespace Cherry.IoC.Tests
         public void BeforeEachTest()
         {
             _registry = null;
-            CreateRegistry();
+            _registry = CreateRegistry();
             Assert.IsNotNull(_registry, "Please implement the partial method CreateRegistry()");
             _locator = _registry.Locator;
         }
@@ -80,17 +80,20 @@ namespace Cherry.IoC.Tests
             Assert.AreSame(childLocator, bar1Typed.Locator);
             Assert.AreSame(childLocator, bar2Typed.Locator);
 
+
             if (transitiveIsSingleton)
             {
                 Assert.AreSame(bar1Typed.Something, bar2Typed.Something);
-                Assert.AreSame(_locator, bar1Typed.Something.Locator);
             }
             else
             {
                 Assert.AreNotSame(bar1Typed.Something, bar2Typed.Something);
-                Assert.AreSame(childLocator, bar1Typed.Something.Locator);
-                Assert.AreSame(childLocator, bar2Typed.Something.Locator);
             }
+
+            // Different IoC Frameworks like Ninject and Unity handle
+            // the resolving of transitive dependencies differently.
+            // Thus, we make that assertion in the framework-specific code
+            AssertTransitiveDependencyHasCorrectLocatorInjected(bar1Typed, _locator, childLocator);       
         }
 
         #endregion
@@ -222,7 +225,5 @@ namespace Cherry.IoC.Tests
         }
 
         #endregion
-
-        partial void CreateRegistry();
     }
 }
