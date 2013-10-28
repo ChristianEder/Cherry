@@ -3,11 +3,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BA23456C-AB86-4DC5-A07D-CCA337B3E9DF}</ProjectGuid>
+    <ProjectGuid>{3D8E558B-1AAC-4755-8399-1045E1FC488D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Cherry.IoC.Tests</RootNamespace>
-    <AssemblyName>Cherry.IoC.Unity.Tests</AssemblyName>
+    <AssemblyName>Cherry.IoC.Cherry.Portable.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -50,48 +50,29 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\LocatorTests.cs">
-      <Link>LocatorTests.cs</Link>
-    </Compile>
-    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\RegistryTests.cs">
-      <Link>RegistryTests.cs</Link>
-    </Compile>
-    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\Services\AbstractFoo.cs">
-      <Link>Services\AbstractFoo.cs</Link>
-    </Compile>
-    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\Services\Bar.cs">
-      <Link>Services\Bar.cs</Link>
-    </Compile>
-    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\Services\Foo.cs">
-      <Link>Services\Foo.cs</Link>
-    </Compile>
-    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\Services\IBar.cs">
-      <Link>Services\IBar.cs</Link>
-    </Compile>
-    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\Services\IFoo.cs">
-      <Link>Services\IFoo.cs</Link>
-    </Compile>
-    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\Services\ISomethingUsingTheLocatorAndRegistry.cs">
-      <Link>Services\ISomethingUsingTheLocatorAndRegistry.cs</Link>
-    </Compile>
-    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\Services\SomethingUsingTheLocator.cs">
-      <Link>Services\SomethingUsingTheLocator.cs</Link>
-    </Compile>
-    <Compile Include="LocatorTests.Unity.cs" />
+    <Compile Include="LocatorTests.Cherry.cs" />
+    <Compile Include="LocatorTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RegistryTests.Unity.cs" />
+    <Compile Include="RegistryTests.Cherry.cs" />
+    <Compile Include="RegistryTests.cs" />
+    <Compile Include="Services\AbstractFoo.cs" />
+    <Compile Include="Services\Bar.cs" />
+    <Compile Include="Services\Foo.cs" />
+    <Compile Include="Services\IBar.cs" />
+    <Compile Include="Services\IFoo.cs" />
+    <Compile Include="Services\ISomethingUsingTheLocatorAndRegistry.cs" />
+    <Compile Include="Services\SomethingUsingTheLocator.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Cherry.IoC.Cherry.Portable\Cherry.IoC.Cherry.Portable.csproj">
+      <Project>{97EDAF9E-6591-4587-8F06-4463D0A0C11B}</Project>
+      <Name>Cherry.IoC.Cherry.Portable</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cherry.IoC.Contracts.Portable\Cherry.IoC.Contracts.Portable.csproj">
       <Project>{09FA70B5-96BA-40A3-94BD-F5E22E0821F4}</Project>
       <Name>Cherry.IoC.Contracts.Portable</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Cherry.IoC.Unity\Cherry.IoC.Unity.csproj">
-      <Project>{67E81726-84D8-4A15-BBC3-BDAE7A1DF032}</Project>
-      <Name>Cherry.IoC.Unity</Name>
-    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

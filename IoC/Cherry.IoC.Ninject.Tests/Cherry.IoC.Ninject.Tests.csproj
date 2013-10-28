@@ -50,28 +50,31 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="..\Cherry.IoC.Unity.Tests\LocatorTests.cs">
+    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\LocatorTests.cs">
       <Link>LocatorTests.cs</Link>
     </Compile>
-    <Compile Include="..\Cherry.IoC.Unity.Tests\RegistryTests.cs">
+    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\RegistryTests.cs">
       <Link>RegistryTests.cs</Link>
     </Compile>
-    <Compile Include="..\Cherry.IoC.Unity.Tests\Services\Bar.cs">
+    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\Services\AbstractFoo.cs">
+      <Link>Services\AbstractFoo.cs</Link>
+    </Compile>
+    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\Services\Bar.cs">
       <Link>Services\Bar.cs</Link>
     </Compile>
-    <Compile Include="..\Cherry.IoC.Unity.Tests\Services\Foo.cs">
+    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\Services\Foo.cs">
       <Link>Services\Foo.cs</Link>
     </Compile>
-    <Compile Include="..\Cherry.IoC.Unity.Tests\Services\IBar.cs">
+    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\Services\IBar.cs">
       <Link>Services\IBar.cs</Link>
     </Compile>
-    <Compile Include="..\Cherry.IoC.Unity.Tests\Services\IFoo.cs">
+    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\Services\IFoo.cs">
       <Link>Services\IFoo.cs</Link>
     </Compile>
-    <Compile Include="..\Cherry.IoC.Unity.Tests\Services\ISomethingUsingTheLocatorAndRegistry.cs">
+    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\Services\ISomethingUsingTheLocatorAndRegistry.cs">
       <Link>Services\ISomethingUsingTheLocatorAndRegistry.cs</Link>
     </Compile>
-    <Compile Include="..\Cherry.IoC.Unity.Tests\Services\SomethingUsingTheLocator.cs">
+    <Compile Include="..\Cherry.IoC.Cherry.Portable.Tests\Services\SomethingUsingTheLocator.cs">
       <Link>Services\SomethingUsingTheLocator.cs</Link>
     </Compile>
     <Compile Include="LocatorTests.Ninject.cs" />

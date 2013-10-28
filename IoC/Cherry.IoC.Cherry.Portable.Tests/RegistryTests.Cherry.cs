@@ -1,5 +1,5 @@
-﻿using Cherry.IoC.Contracts.Portable;
-using Cherry.IoC.Unity;
+﻿using Cherry.IoC.Cherry.Portable;
+using Cherry.IoC.Contracts.Portable;
 
 namespace Cherry.IoC.Tests
 {
@@ -7,7 +7,7 @@ namespace Cherry.IoC.Tests
     {
         private IServiceRegistry CreateRegistry()
         {
-            return new UnityServiceLocatorAndRegistry();
+            return new CherryServiceLocatorAndRegistry();
         }
     }
 }

@@ -69,7 +69,7 @@ namespace Cherry.MessageBus.Tests
             _bus.Publish(message);
 
             // TODO: this will fail for now. This test is a feature request.
-            handlerMock.Verify(h => h.Handle(message), Times.Once);
+            handlerMock.Verify(h => h.Handle(message), Times.Once, "FEATURE REQUEST: Message sub types handling");
 
         }
     }

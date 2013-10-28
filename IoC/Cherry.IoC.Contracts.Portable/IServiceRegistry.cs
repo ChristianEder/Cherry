@@ -8,5 +8,6 @@ namespace Cherry.IoC.Contracts.Portable
         void Register(Type serviceKey, Type serviceType, bool singleton);
         IServiceRegistry CreateChildRegistry();
         IServiceLocator Locator { get; }
+        bool IsRegistered(Type serviceKey);
     }
 }

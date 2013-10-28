@@ -1,12 +1,13 @@
-﻿using Cherry.IoC.Ninject;
+﻿using Cherry.IoC.Contracts.Portable;
+using Cherry.IoC.Ninject;
 
 namespace Cherry.IoC.Tests
 {
     public partial class RegistryTests
     {
-        partial void CreateRegistry()
+        private IServiceRegistry CreateRegistry()
         {
-            _registry = new NinjectServiceLocatorAndRegistry();
+            return new NinjectServiceLocatorAndRegistry();
         }
     }
 }

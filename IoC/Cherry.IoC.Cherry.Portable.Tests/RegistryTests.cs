@@ -14,7 +14,7 @@ namespace Cherry.IoC.Tests
         public void BeforeEachTest()
         {
             _registry = null;
-            CreateRegistry();
+            _registry = CreateRegistry();
             Assert.IsNotNull(_registry, "Please implement the partial method CreateRegistry()");
         }
 
@@ -37,6 +37,21 @@ namespace Cherry.IoC.Tests
         public void RegisterInstance()
         {
             _registry.Register(typeof(IFoo), new Foo());
+        }
+
+        [TestMethod]
+        public void IsRegistered()
+        {
+            Assert.IsFalse(_registry.IsRegistered(typeof(IFoo)));
+            _registry.Register(typeof(IFoo), new Foo());
+            Assert.IsTrue(_registry.IsRegistered(typeof(IFoo)));
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void IsRegisteredWithNullKeyFails()
+        {
+            _registry.IsRegistered(null);
         }
 
         [TestMethod]
@@ -91,6 +106,20 @@ namespace Cherry.IoC.Tests
             _registry.Register(typeof(IBar), typeof(Foo), true);
         }
 
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void RegisterSingletonInterfaceFails()
+        {
+            _registry.Register(typeof(IFoo), typeof(IFoo), true);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void RegisterSingletonAbstractClassFails()
+        {
+            _registry.Register(typeof(IFoo), typeof(AbstractFoo), true);
+        }
+
         #endregion
 
         #region RegisterPerResolve
@@ -122,8 +151,20 @@ namespace Cherry.IoC.Tests
             _registry.Register(typeof(IBar), typeof(Foo), false);
         }
 
-        #endregion
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void RegisterPerResolveInterfaceFails()
+        {
+            _registry.Register(typeof(IFoo), typeof(IFoo), false);
+        }
 
-        partial void CreateRegistry();
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentException))]
+        public void RegisterPerResolveAbstractClassFails()
+        {
+            _registry.Register(typeof(IFoo), typeof(AbstractFoo), false);
+        }
+
+        #endregion
     }
 }

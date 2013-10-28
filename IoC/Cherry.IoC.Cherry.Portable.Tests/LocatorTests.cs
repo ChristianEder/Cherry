@@ -29,6 +29,31 @@ namespace Cherry.IoC.Tests
             Assert.IsNotNull(foo);
         }
 
+
+        [TestMethod]
+        public void CanGet()
+        {
+            Assert.IsFalse(_locator.CanGet(typeof(IFoo)));
+            Assert.IsTrue(_locator.CanGet(typeof(Foo)));
+            _registry.Register<IFoo, Foo>(false);
+            Assert.IsTrue(_locator.CanGet(typeof(IFoo)));
+        }
+        
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void CanGetWithNullKeyFails()
+        {
+            _locator.CanGet(null);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception), AllowDerivedTypes = true)]
+        public void ResolveUnregisteredInterfaceFails()
+        {
+            _locator.Get<IFoo>();
+        }
+
+
         [TestMethod]
         public void InjectLocatorAndRegistry()
         {
@@ -70,12 +95,12 @@ namespace Cherry.IoC.Tests
             var bar1 = childLocator.Get<IBar>();
             var bar2 = childLocator.Get<IBar>();
 
-            Assert.IsInstanceOfType(bar1, typeof (BarUsingSomething));
-            Assert.IsInstanceOfType(bar2, typeof (BarUsingSomething));
+            Assert.IsInstanceOfType(bar1, typeof(BarUsingSomething));
+            Assert.IsInstanceOfType(bar2, typeof(BarUsingSomething));
             Assert.AreNotSame(bar1, bar2);
 
-            var bar1Typed = (BarUsingSomething) bar1;
-            var bar2Typed = (BarUsingSomething) bar2;
+            var bar1Typed = (BarUsingSomething)bar1;
+            var bar2Typed = (BarUsingSomething)bar2;
 
             Assert.AreSame(childLocator, bar1Typed.Locator);
             Assert.AreSame(childLocator, bar2Typed.Locator);
@@ -93,7 +118,7 @@ namespace Cherry.IoC.Tests
             // Different IoC Frameworks like Ninject and Unity handle
             // the resolving of transitive dependencies differently.
             // Thus, we make that assertion in the framework-specific code
-            AssertTransitiveDependencyHasCorrectLocatorInjected(bar1Typed, _locator, childLocator);       
+            AssertTransitiveDependencyHasCorrectLocatorInjected(bar1Typed, _locator, childLocator);
         }
 
         #endregion

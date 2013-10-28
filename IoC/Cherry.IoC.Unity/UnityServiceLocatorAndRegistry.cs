@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Cherry.IoC.Contracts.Portable;
 using Microsoft.Practices.Unity;
 
@@ -30,6 +31,14 @@ namespace Cherry.IoC.Unity
             {
                 throw new ArgumentNullException("serviceKey", "The serviceKey must not be null");
             }
+            if (ReferenceEquals(serviceType, null))
+            {
+                throw new ArgumentNullException("serviceType", "The serviceType must not be null");
+            }
+            if (!serviceType.IsClass || serviceType.IsAbstract)
+            {
+                throw new ArgumentException("The serviceType must be a non-abstract class type", "serviceType");
+            }
 
             LifetimeManager lifetimeManager;
             if (singleton)
@@ -54,9 +63,42 @@ namespace Cherry.IoC.Unity
             get { return this; }
         }
 
+        public bool IsRegistered(Type serviceKey)
+        {
+            return IsRegisteredIn(serviceKey, _container);
+        }
+
         public object Get(Type serviceKey)
         {
             return _container.Resolve(serviceKey);
+        }
+
+        public bool CanGet(Type serviceKey)
+        {
+            if (IsRegisteredIn(serviceKey, _container))
+            {
+                return true;
+            }
+            var parent = _container.Parent;
+            while (parent != null)
+            {
+                if (IsRegisteredIn(serviceKey, parent))
+                {
+                    return true;
+                }
+                parent = parent.Parent;
+            }
+
+            if (serviceKey.IsClass && !serviceKey.IsAbstract)
+            {
+                return serviceKey.GetConstructors().Any(c => c.GetParameters().All(p => CanGet(p.ParameterType)));
+            }
+            return false;
+        }
+
+        private static bool IsRegisteredIn(Type serviceKey, IUnityContainer container)
+        {
+            return container.IsRegistered(serviceKey);
         }
     }
 }
