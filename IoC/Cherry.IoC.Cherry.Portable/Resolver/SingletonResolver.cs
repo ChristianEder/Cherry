@@ -30,5 +30,15 @@ namespace Cherry.IoC.Cherry.Portable.Resolver
                 return instance;
             }
         }
+
+        public void Dispose()
+        {
+            var disposable = _instance as IDisposable;
+            if (disposable != null)
+            {
+                disposable.Dispose();
+            }
+            _instance = null;
+        }
     }
 }

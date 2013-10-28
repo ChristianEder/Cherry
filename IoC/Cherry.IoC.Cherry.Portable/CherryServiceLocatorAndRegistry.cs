@@ -9,6 +9,7 @@ namespace Cherry.IoC.Cherry.Portable
     public class CherryServiceLocatorAndRegistry : ICherryServiceLocatorAndRegistry
     {
         private readonly CherryServiceLocatorAndRegistry _parent;
+        private readonly List<CherryServiceLocatorAndRegistry> _children = new List<CherryServiceLocatorAndRegistry>(); 
 
         private readonly Dictionary<Type, IResolver> _registrations = new Dictionary<Type, IResolver>();
 
@@ -85,7 +86,22 @@ namespace Cherry.IoC.Cherry.Portable
 
         public IServiceRegistry CreateChildRegistry()
         {
-            return new CherryServiceLocatorAndRegistry(this);
+            var child = new CherryServiceLocatorAndRegistry(this);
+
+            lock (_children)
+            {
+                _children.Add(child);
+            }
+
+            return child;
+        }
+
+        public IServiceRegistry Parent
+        {
+            get
+            {
+                return _parent;
+            }
         }
 
         public IServiceLocator Locator
@@ -128,15 +144,6 @@ namespace Cherry.IoC.Cherry.Portable
             return false;
         }
 
-        private bool IsRegisteredRecursively(Type serviceKey)
-        {
-            if (IsRegistered(serviceKey))
-            {
-                return true;
-            }
-            return _parent != null && _parent.IsRegisteredRecursively(serviceKey);
-        }
-
         public object Get(ICherryServiceLocatorAndRegistry originalLocator, Type serviceKey)
         {
             if (ReferenceEquals(serviceKey, null))
@@ -160,6 +167,36 @@ namespace Cherry.IoC.Cherry.Portable
                 throw new ArgumentException(string.Format("The type {0} could not be resolved.", serviceKey), "serviceKey");
             }
             return resolver.Get(originalLocator, this);
+        }
+
+        public void Dispose()
+        {
+            lock (_registrations)
+            {
+                var resolvers = _registrations.Values.ToArray();
+                _registrations.Clear();
+                foreach (var resolver in resolvers)
+                {
+                    resolver.Dispose();
+                }
+            }
+            lock (_children)
+            {
+                foreach (var child in _children)
+                {
+                    child.Dispose();
+                }
+                _children.Clear();
+            }
+        }
+
+        private bool IsRegisteredRecursively(Type serviceKey)
+        {
+            if (IsRegistered(serviceKey))
+            {
+                return true;
+            }
+            return _parent != null && _parent.IsRegisteredRecursively(serviceKey);
         }
     }
 }

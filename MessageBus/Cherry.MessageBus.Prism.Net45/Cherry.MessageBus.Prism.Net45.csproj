@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PrismMessageBus.cs" />
+    <Compile Include="PrismMessageBusModule.cs" />
     <Compile Include="PrismMessageSubscription.cs" />
     <Compile Include="PrismMessageSubscriptionExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -64,6 +65,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\IoC\Cherry.IoC.Contracts.Portable\Cherry.IoC.Contracts.Portable.csproj">
+      <Project>{09fa70b5-96ba-40a3-94bd-f5e22e0821f4}</Project>
+      <Name>Cherry.IoC.Contracts.Portable</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cherry.MessageBus.Contracts.Portable\Cherry.MessageBus.Contracts.Portable.csproj">
       <Project>{7DAF2538-C9D2-4A52-A192-5D677E67FD0B}</Project>
       <Name>Cherry.MessageBus.Contracts.Portable</Name>

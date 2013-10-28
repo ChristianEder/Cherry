@@ -9,15 +9,18 @@ namespace Cherry.IoC.Ninject
     public class NinjectServiceLocatorAndRegistry : IServiceRegistry, IServiceLocator
     {
         private readonly IKernel _kernel;
+        private readonly NinjectServiceLocatorAndRegistry _parent;
+        private bool _hasBeenDisposed;
 
-        public NinjectServiceLocatorAndRegistry() : this(new StandardKernel())
+        public NinjectServiceLocatorAndRegistry() : this(null)
         {
 
         }
 
-        private NinjectServiceLocatorAndRegistry(IKernel kernel)
+        private NinjectServiceLocatorAndRegistry(NinjectServiceLocatorAndRegistry parent)
         {
-            _kernel = kernel;
+            _parent = parent;
+            _kernel = _parent != null ? new ChildKernel(_parent._kernel) : new StandardKernel();
             _kernel.Bind<IServiceRegistry>().ToConstant(this);
             _kernel.Bind<IServiceLocator>().ToConstant(this);
         }
@@ -67,8 +70,15 @@ namespace Cherry.IoC.Ninject
 
         public IServiceRegistry CreateChildRegistry()
         {
-            IKernel child = new ChildKernel(_kernel);
-            return new NinjectServiceLocatorAndRegistry(child);
+            return new NinjectServiceLocatorAndRegistry(this);
+        }
+
+        public IServiceRegistry Parent
+        {
+            get
+            {
+                return _parent;
+            }
         }
 
         public IServiceLocator Locator
@@ -116,5 +126,14 @@ namespace Cherry.IoC.Ninject
             return kernel.GetBindings(serviceKey).Any();
         }
 
+        public void Dispose()
+        {
+            if (_hasBeenDisposed)
+            {
+                return;
+            }
+            _hasBeenDisposed = true;
+            _kernel.Dispose();
+        }
     }
 }

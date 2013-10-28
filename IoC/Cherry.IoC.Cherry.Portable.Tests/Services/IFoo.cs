@@ -1,6 +1,8 @@
-﻿namespace Cherry.IoC.Tests.Services
+﻿using System;
+
+namespace Cherry.IoC.Tests.Services
 {
-    public interface IFoo
+    public interface IFoo : IDisposable
     {
         void Bar();
     }

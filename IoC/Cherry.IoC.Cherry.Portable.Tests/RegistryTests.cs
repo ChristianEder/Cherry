@@ -2,6 +2,7 @@
 using Cherry.IoC.Contracts.Portable;
 using Cherry.IoC.Tests.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
 
 namespace Cherry.IoC.Tests
 {
@@ -15,7 +16,7 @@ namespace Cherry.IoC.Tests
         {
             _registry = null;
             _registry = CreateRegistry();
-            Assert.IsNotNull(_registry, "Please implement the partial method CreateRegistry()");
+            Assert.IsNotNull(_registry, "Please implement the method CreateRegistry()");
         }
 
         [TestMethod]
@@ -29,6 +30,18 @@ namespace Cherry.IoC.Tests
         {
             var child = _registry.CreateChildRegistry();
             Assert.IsNotNull(child);
+        }
+
+        [TestMethod]
+        public void ParentRegistryDispose()
+        {
+            var child = _registry.CreateChildRegistry();
+
+            child.Register<IFoo, Foo>(true);
+            var foo = (Foo)child.Locator.Get<IFoo>();
+
+            _registry.Dispose();
+            Assert.AreEqual(1, foo.DisposedCalls);
         }
 
         #region RegisterInstance
@@ -73,6 +86,17 @@ namespace Cherry.IoC.Tests
         public void RegisterInstanceWronglyTypedInstanceFails()
         {
             _registry.Register(typeof(IBar), new Foo());
+        }
+
+        [TestMethod]
+        public void RegisterInstanceDispose()
+        {
+            var foo = new Foo();
+            _registry.Register(foo);
+
+            _registry.Dispose();
+
+            Assert.AreEqual(1, foo.DisposedCalls);
         }
 
         #endregion
@@ -120,6 +144,15 @@ namespace Cherry.IoC.Tests
             _registry.Register(typeof(IFoo), typeof(AbstractFoo), true);
         }
 
+        [TestMethod]
+        public void RegisterSingletonDispose()
+        {
+            _registry.Register<IFoo, Foo>(true);
+            var foo = (Foo)_registry.Locator.Get<IFoo>();
+            _registry.Dispose();
+            Assert.AreEqual(1, foo.DisposedCalls);
+        }
+
         #endregion
 
         #region RegisterPerResolve
@@ -163,6 +196,15 @@ namespace Cherry.IoC.Tests
         public void RegisterPerResolveAbstractClassFails()
         {
             _registry.Register(typeof(IFoo), typeof(AbstractFoo), false);
+        }
+
+        [TestMethod]
+        public void RegisterPerResolveDispose()
+        {
+            _registry.Register<IFoo, Foo>(false);
+            var foo = (Foo)_registry.Locator.Get<IFoo>();
+            _registry.Dispose();
+            Assert.AreEqual(0, foo.DisposedCalls);
         }
 
         #endregion

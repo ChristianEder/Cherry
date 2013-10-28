@@ -1,8 +1,10 @@
-﻿namespace Cherry.IoC.Cherry.Portable.Resolver
+﻿using System;
+
+namespace Cherry.IoC.Cherry.Portable.Resolver
 {
     public class SingletonInstanceResolver : IResolver
     {
-        private readonly object _instance;
+        private object _instance;
 
         public SingletonInstanceResolver(object instance)
         {
@@ -12,6 +14,16 @@
         public object Get(ICherryServiceLocatorAndRegistry original, ICherryServiceLocatorAndRegistry current)
         {
             return _instance;
+        }
+
+        public void Dispose()
+        {
+            var disposable = _instance as IDisposable;
+            if (disposable != null)
+            {
+                disposable.Dispose();
+            }
+            _instance = null;
         }
     }
 }

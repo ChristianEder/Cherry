@@ -34,6 +34,10 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
+    <ProjectReference Include="..\..\IoC\Cherry.IoC.Contracts.Portable\Cherry.IoC.Contracts.Portable.csproj">
+      <Project>{09FA70B5-96BA-40A3-94BD-F5E22E0821F4}</Project>
+      <Name>Cherry.IoC.Contracts.Portable</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cherry.MessageBus.Contracts.Portable\Cherry.MessageBus.Contracts.Portable.csproj">
       <Project>{7DAF2538-C9D2-4A52-A192-5D677E67FD0B}</Project>
       <Name>Cherry.MessageBus.Contracts.Portable</Name>
@@ -41,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CherryMessageBus.cs" />
+    <Compile Include="CherryMessageBusModule.cs" />
     <Compile Include="CherryMessageChannel.cs" />
     <Compile Include="CherryMessageSubscription.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

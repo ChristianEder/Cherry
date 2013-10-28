@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Net.Configuration;
 using Cherry.IoC.Contracts.Portable;
 using Microsoft.Practices.Unity;
 
@@ -8,14 +9,17 @@ namespace Cherry.IoC.Unity
     public class UnityServiceLocatorAndRegistry : IServiceRegistry, IServiceLocator
     {
         private readonly IUnityContainer _container;
+        private readonly UnityServiceLocatorAndRegistry _parent;
+        private bool _hasBeenDisposed = false;
 
-        public UnityServiceLocatorAndRegistry() : this(new UnityContainer())
+        public UnityServiceLocatorAndRegistry() : this(null)
         {
         }
 
-        private UnityServiceLocatorAndRegistry(IUnityContainer container)
+        private UnityServiceLocatorAndRegistry(UnityServiceLocatorAndRegistry parent)
         {
-            _container = container;
+            _parent = parent;
+            _container = _parent != null ? _parent._container.CreateChildContainer() : new UnityContainer();
             _container.RegisterInstance<IServiceRegistry>(this);
             _container.RegisterInstance<IServiceLocator>(this);
         }
@@ -55,7 +59,15 @@ namespace Cherry.IoC.Unity
 
         public IServiceRegistry CreateChildRegistry()
         {
-            return new UnityServiceLocatorAndRegistry(_container.CreateChildContainer());
+            return new UnityServiceLocatorAndRegistry(this);
+        }
+
+        public IServiceRegistry Parent
+        {
+            get
+            {
+                return _parent;
+            }
         }
 
         public IServiceLocator Locator
@@ -99,6 +111,16 @@ namespace Cherry.IoC.Unity
         private static bool IsRegisteredIn(Type serviceKey, IUnityContainer container)
         {
             return container.IsRegistered(serviceKey);
+        }
+
+        public void Dispose()
+        {
+            if (_hasBeenDisposed)
+            {
+                return;
+            }
+            _hasBeenDisposed = true;
+            _container.Dispose();
         }
     }
 }

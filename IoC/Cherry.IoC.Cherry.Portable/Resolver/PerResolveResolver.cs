@@ -35,5 +35,10 @@ namespace Cherry.IoC.Cherry.Portable.Resolver
             var instance = bestConstructor.Invoke(parameters);
             return instance;
         }
+
+        public void Dispose()
+        {
+            
+        }
     }
 }

@@ -16,7 +16,7 @@ namespace Cherry.IoC.Tests
         {
             _registry = null;
             _registry = CreateRegistry();
-            Assert.IsNotNull(_registry, "Please implement the partial method CreateRegistry()");
+            Assert.IsNotNull(_registry, "Please implement the method CreateRegistry()");
             _locator = _registry.Locator;
         }
 
