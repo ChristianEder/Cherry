@@ -3,7 +3,7 @@ using System.Linq;
 
 namespace Cherry.IoC.Cherry.Portable.Resolver
 {
-    internal class PerResolveResolver : IResolver
+    public class PerResolveResolver : IResolver
     {
         private readonly Type _targetType;
 

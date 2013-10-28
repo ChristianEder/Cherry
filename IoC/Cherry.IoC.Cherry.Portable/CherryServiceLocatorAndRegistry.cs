@@ -10,12 +10,12 @@ namespace Cherry.IoC.Cherry.Portable
     {
         private readonly CherryServiceLocatorAndRegistry _parent;
 
-        private readonly Dictionary<Type, IResolver> _registrations = new Dictionary<Type, IResolver>(); 
+        private readonly Dictionary<Type, IResolver> _registrations = new Dictionary<Type, IResolver>();
 
         public CherryServiceLocatorAndRegistry()
-            :this(null)
+            : this(null)
         {
-            
+
         }
 
         private CherryServiceLocatorAndRegistry(CherryServiceLocatorAndRegistry parent)
@@ -40,9 +40,15 @@ namespace Cherry.IoC.Cherry.Portable
             {
                 throw new ArgumentException("The service instance must be convertible to the type specified as serviceKey", "service");
             }
-            lock(_registrations)
+            var singletonInstanceResolver = new SingletonInstanceResolver(service);
+            Register(serviceKey, singletonInstanceResolver);
+        }
+
+        public void Register(Type serviceKey, IResolver resolver)
+        {
+            lock (_registrations)
             {
-                _registrations[serviceKey] = new SingletonInstanceResolver(service);
+                _registrations[serviceKey] = resolver;
             }
         }
 
@@ -64,17 +70,17 @@ namespace Cherry.IoC.Cherry.Portable
             {
                 throw new ArgumentException("The serviceType must be convertible to the type specified as serviceKey", "serviceType");
             }
-            lock (_registrations)
+
+            IResolver resolver;
+            if (singleton)
             {
-                if (singleton)
-                {
-                    _registrations[serviceKey] = new SingletonResolver(serviceType);
-                }
-                else
-                {
-                    _registrations[serviceKey] = new PerResolveResolver(serviceType);
-                }
+                resolver = new SingletonResolver(serviceType);
             }
+            else
+            {
+                resolver = new PerResolveResolver(serviceType);
+            }
+            Register(serviceKey, resolver);
         }
 
         public IServiceRegistry CreateChildRegistry()

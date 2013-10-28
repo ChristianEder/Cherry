@@ -2,7 +2,7 @@
 
 namespace Cherry.IoC.Cherry.Portable.Resolver
 {
-    internal class SingletonResolver : IResolver
+    public class SingletonResolver : IResolver
     {
         private readonly Type _targetType;
         private volatile object _instance;
