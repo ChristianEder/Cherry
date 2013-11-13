@@ -14,5 +14,10 @@
         public string Title { get; private set; }
         public int? Max { get; private set; }
         public int? Current { get; private set; }
+
+        public override string ToString()
+        {
+            return string.Format("{0} \"{1}\": {3}/{2}", Key, Title, Max, Current);
+        }
     }
 }

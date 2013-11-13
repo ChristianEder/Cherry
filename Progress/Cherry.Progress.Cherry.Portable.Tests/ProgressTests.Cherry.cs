@@ -8,7 +8,7 @@ namespace Cherry.Progress.Tests
     {
         private IProgressService CreateProgressService(IServiceLocator locator)
         {
-            return new CherryProgressService(locator);
+            return locator.Get<CherryProgressService>();
         }
     }
 }

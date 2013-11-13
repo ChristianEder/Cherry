@@ -34,6 +34,10 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
+    <ProjectReference Include="..\Cherry.IoC.Common.Portable\Cherry.IoC.Common.Portable.csproj">
+      <Project>{EBEE349F-0AD4-4124-8928-1E8487EDBDCF}</Project>
+      <Name>Cherry.IoC.Common.Portable</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Cherry.IoC.Contracts.Portable\Cherry.IoC.Contracts.Portable.csproj">
       <Project>{09FA70B5-96BA-40A3-94BD-F5E22E0821F4}</Project>
       <Name>Cherry.IoC.Contracts.Portable</Name>

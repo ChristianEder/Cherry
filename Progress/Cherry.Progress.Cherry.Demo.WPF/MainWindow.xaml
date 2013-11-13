@@ -1,0 +1,12 @@
+﻿<Window x:Class="Cherry.Pro.Demo.WPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="350" Width="525">
+    <StackPanel>
+        <Button Click="Button_Click">
+            Start Progress
+        </Button>
+        <Label x:Name="ProgressLabel"></Label>
+        <ProgressBar x:Name="ProgressBar"></ProgressBar>
+    </StackPanel>
+</Window>

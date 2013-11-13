@@ -1,26 +1,26 @@
-﻿using Cherry.IoC.Contracts.Portable;
+﻿using System;
 using Cherry.Progress.Contracts.Portable;
 
 namespace Cherry.Progress.Cherry.Portable
 {
     public class CherryProgressService : IProgressService
     {
-        private readonly IServiceLocator _serviceLocator;
+        private readonly Func<IProgressDisplay> _progressDisplayFactory;
 
-        public CherryProgressService(IServiceLocator serviceLocator)
+        public CherryProgressService(Func<IProgressDisplay> progressDisplayFactory)
         {
-            _serviceLocator = serviceLocator;
+            _progressDisplayFactory = progressDisplayFactory;
         }
 
         public IProgress CreateProgress(string key)
         {
-            var display = _serviceLocator.TryGet<IProgressDisplay>() ?? new DebugOutputProgressDisplay();
+            var display = _progressDisplayFactory();
             return new CherryProgress(key, display);
         }
 
         public ICompositeProgress CreateCompositeProgress(string key)
         {
-            var display = _serviceLocator.TryGet<IProgressDisplay>() ?? new DebugOutputProgressDisplay();
+            var display = _progressDisplayFactory();
             return new CherryCompositeProgress(key, display);
         }
     }

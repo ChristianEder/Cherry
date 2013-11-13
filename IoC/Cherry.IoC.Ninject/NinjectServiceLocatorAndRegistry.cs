@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Linq;
+using Cherry.IoC.Common.Portable;
 using Cherry.IoC.Contracts.Portable;
 using Ninject;
 using Ninject.Extensions.ChildKernel;
+using Ninject.Syntax;
 
 namespace Cherry.IoC.Ninject
 {
@@ -14,15 +16,59 @@ namespace Cherry.IoC.Ninject
 
         public NinjectServiceLocatorAndRegistry() : this(null)
         {
-
         }
 
         private NinjectServiceLocatorAndRegistry(NinjectServiceLocatorAndRegistry parent)
         {
             _parent = parent;
             _kernel = _parent != null ? new ChildKernel(_parent._kernel) : new StandardKernel();
+
             _kernel.Bind<IServiceRegistry>().ToConstant(this);
             _kernel.Bind<IServiceLocator>().ToConstant(this);
+        }
+
+        public object Get(Type serviceKey)
+        {
+            object factoryMethod;
+            if (ServiceLocatorFactoryMethodSupportExtensions.GetFactoryMethod(this, serviceKey,
+                out factoryMethod))
+            {
+                return factoryMethod;
+            }
+
+            return _kernel.Get(serviceKey);
+        }
+
+        public bool CanGet(Type serviceKey)
+        {
+            if (IsRegisteredIn(serviceKey, _kernel))
+            {
+                return true;
+            }
+            var kernelAsChildKernel = _kernel as ChildKernel;
+            IKernel parent = kernelAsChildKernel != null ? kernelAsChildKernel.ParentResolutionRoot as IKernel : null;
+
+            while (parent != null)
+            {
+                if (IsRegisteredIn(serviceKey, parent))
+                {
+                    return true;
+                }
+                kernelAsChildKernel = parent as ChildKernel;
+                parent = kernelAsChildKernel != null ? kernelAsChildKernel.ParentResolutionRoot as IKernel : null;
+            }
+
+            Type factoryMethodType;
+            if (ServiceLocatorFactoryMethodSupportExtensions.IsFactoryMethod(serviceKey, out factoryMethodType))
+            {
+                return CanGet(factoryMethodType);
+            }
+
+            if (serviceKey.IsClass && !serviceKey.IsAbstract)
+            {
+                return serviceKey.GetConstructors().Any(c => c.GetParameters().All(p => CanGet(p.ParameterType)));
+            }
+            return false;
         }
 
         public void Register(Type serviceKey, object service)
@@ -37,7 +83,8 @@ namespace Cherry.IoC.Ninject
             }
             if (!serviceKey.IsInstanceOfType(service))
             {
-                throw new ArgumentException("The service instance must be convertible to the type specified as serviceKey", "service");
+                throw new ArgumentException(
+                    "The service instance must be convertible to the type specified as serviceKey", "service");
             }
             _kernel.Bind(serviceKey).ToConstant(service);
         }
@@ -58,10 +105,11 @@ namespace Cherry.IoC.Ninject
             }
             if (!serviceKey.IsAssignableFrom(serviceType))
             {
-                throw new ArgumentException("The serviceType must be convertible to the type specified as serviceKey", "serviceType");
+                throw new ArgumentException("The serviceType must be convertible to the type specified as serviceKey",
+                    "serviceType");
             }
 
-            var binding = _kernel.Bind(serviceKey).To(serviceType);
+            IBindingWhenInNamedWithOrOnSyntax<object> binding = _kernel.Bind(serviceKey).To(serviceType);
             if (singleton)
             {
                 binding.InSingletonScope();
@@ -75,10 +123,7 @@ namespace Cherry.IoC.Ninject
 
         public IServiceRegistry Parent
         {
-            get
-            {
-                return _parent;
-            }
+            get { return _parent; }
         }
 
         public IServiceLocator Locator
@@ -90,41 +135,6 @@ namespace Cherry.IoC.Ninject
         {
             return IsRegisteredIn(serviceKey, _kernel);
         }
-        public object Get(Type serviceKey)
-        {
-            return _kernel.Get(serviceKey);
-        }
-
-        public bool CanGet(Type serviceKey)
-        {
-            if (IsRegisteredIn(serviceKey, _kernel))
-            {
-                return true;
-            }
-            var kernelAsChildKernel = _kernel as ChildKernel;
-            var parent = kernelAsChildKernel != null ? kernelAsChildKernel.ParentResolutionRoot as IKernel : null;
-
-            while (parent != null)
-            {
-                if (IsRegisteredIn(serviceKey, parent))
-                {
-                    return true;
-                }
-                kernelAsChildKernel = parent as ChildKernel;
-                parent = kernelAsChildKernel != null ? kernelAsChildKernel.ParentResolutionRoot as IKernel : null;
-            }
-
-            if (serviceKey.IsClass && !serviceKey.IsAbstract)
-            {
-                return serviceKey.GetConstructors().Any(c => c.GetParameters().All(p => CanGet(p.ParameterType)));
-            }
-            return false;
-        }
-
-        private static bool IsRegisteredIn(Type serviceKey, IKernel kernel)
-        {
-            return kernel.GetBindings(serviceKey).Any();
-        }
 
         public void Dispose()
         {
@@ -134,6 +144,11 @@ namespace Cherry.IoC.Ninject
             }
             _hasBeenDisposed = true;
             _kernel.Dispose();
+        }
+
+        private static bool IsRegisteredIn(Type serviceKey, IKernel kernel)
+        {
+            return kernel.GetBindings(serviceKey).Any();
         }
     }
 }

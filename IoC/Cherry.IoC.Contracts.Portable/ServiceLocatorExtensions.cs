@@ -30,6 +30,5 @@ namespace Cherry.IoC.Contracts.Portable
             }
             return default(TService);
         }
-
     }
 }

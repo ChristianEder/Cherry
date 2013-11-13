@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Configuration;
+using Cherry.IoC.Common.Portable;
 using Cherry.IoC.Contracts.Portable;
 using Microsoft.Practices.Unity;
 
@@ -82,6 +83,12 @@ namespace Cherry.IoC.Unity
 
         public object Get(Type serviceKey)
         {
+            object factoryMethod;
+            if (ServiceLocatorFactoryMethodSupportExtensions.GetFactoryMethod(this, serviceKey, out factoryMethod))
+            {
+                return factoryMethod;
+            }
+
             return _container.Resolve(serviceKey);
         }
 
@@ -99,6 +106,12 @@ namespace Cherry.IoC.Unity
                     return true;
                 }
                 parent = parent.Parent;
+            }
+
+            Type factoryMethodType;
+            if (ServiceLocatorFactoryMethodSupportExtensions.IsFactoryMethod(serviceKey, out factoryMethodType))
+            {
+                return CanGet(factoryMethodType);
             }
 
             if (serviceKey.IsClass && !serviceKey.IsAbstract)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cherry.IoC.Cherry.Portable.Resolver;
+using Cherry.IoC.Common.Portable;
 using Cherry.IoC.Contracts.Portable;
 
 namespace Cherry.IoC.Cherry.Portable
@@ -137,6 +138,13 @@ namespace Cherry.IoC.Cherry.Portable
             {
                 return true;
             }
+
+            Type factoryMethodType;
+            if (ServiceLocatorFactoryMethodSupportExtensions.IsFactoryMethod(serviceKey, out factoryMethodType))
+            {
+                return CanGet(factoryMethodType);
+            }
+
             if (serviceKey.IsClass && !serviceKey.IsAbstract)
             {
                 return serviceKey.GetConstructors().Any(c => c.GetParameters().All(p => CanGet(p.ParameterType)));
@@ -150,6 +158,13 @@ namespace Cherry.IoC.Cherry.Portable
             {
                 throw new ArgumentNullException("serviceKey", "The serviceKey must not be null");
             }
+
+            object factoryMethod;
+            if (ServiceLocatorFactoryMethodSupportExtensions.GetFactoryMethod(this, serviceKey, out factoryMethod))
+            {
+                return factoryMethod;
+            }
+
             if (serviceKey.IsClass && !serviceKey.IsAbstract && !IsRegisteredRecursively(serviceKey))
             {
                 var perResolveResolver = new PerResolveResolver(serviceKey);

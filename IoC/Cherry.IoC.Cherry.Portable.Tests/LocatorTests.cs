@@ -29,7 +29,34 @@ namespace Cherry.IoC.Tests
             Assert.IsNotNull(foo);
         }
 
+        [TestMethod]
+        public void CanResolveClass()
+        {
+            var canFoo = _locator.CanGet<Foo>();
+            Assert.IsTrue(canFoo);
+        }
 
+        [TestMethod]
+        public void CanResolveClassFactoryMethod()
+        {
+            var canFoo = _locator.CanGet<Func<Foo>>();
+            Assert.IsTrue(canFoo);
+        }
+
+        [TestMethod]
+        public void ResolveFactoryMethod()
+        {
+            _registry.Register<IFoo, Foo>(true);
+
+            var foo1 = _locator.Get<IFoo>();
+            var foo2Func = _locator.Get<Func<IFoo>>();
+            var foo2 = foo2Func();
+
+            Assert.IsNotNull(foo1);
+            Assert.IsNotNull(foo2);
+            Assert.AreSame(foo1, foo2);
+        }
+        
         [TestMethod]
         public void CanGet()
         {

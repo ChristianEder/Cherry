@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Cherry.IoC.Cherry.Portable;
@@ -51,24 +53,36 @@ namespace Cherry.Progress.Tests
         [TestMethod]
         public async Task CompositeProgress()
         {
+            var display = new TestableProgressDisplay();
+            _registry.Register<IProgressDisplay>(display);
+
             using (var p = _progressService.CreateCompositeProgress("CompositeProgress"))
             {
+                AssertStarted(display, "CompositeProgress");
+                AssertCompleted(display);
+                AssertProgressIs(display, "CompositeProgress", 0, false);
+
                 p.Title = "Hello";
                 p.Description = "World";
 
-                var subTasks = new List<Task<int>>
-                {
-                    DoSomething(p, 1),
-                    DoSomething(p, 2),
-                    DoSomething(p, 3)
-                };
+
+                var subTasks = new List<Task<int>>();
+                subTasks.Add(DoSomething(p, 1));
+                subTasks.Add(DoSomething(p, 2));
+                subTasks.Add(DoSomething(p, 3));
+
+
 
                 foreach (var subTask in subTasks)
                 {
-                    await subTask;
+                    var result = await subTask;
+                    AssertProgressIs(display, "CompositeProgress", result, true);
                 }
             }
 
+            AssertStarted(display, "CompositeProgress");
+            AssertProgressIs(display, "CompositeProgress", 3, false);
+            AssertCompleted(display, "CompositeProgress");
         }
 
         private static void AssertStarted(TestableProgressDisplay display, params string[] keys)
@@ -88,6 +102,32 @@ namespace Cherry.Progress.Tests
             for (int i = 0; i < keys.Length; i++)
             {
                 Assert.AreEqual(keys[i], display.CompletedKeys[i]);
+            }
+        }
+
+        private static void AssertProgressIs(TestableProgressDisplay display, string key, int expected, bool orHigher)
+        {
+            var change =
+                display.Changes.ToArray().Where(c => c.Key == key).OrderBy(c => c.Current.GetValueOrDefault()).LastOrDefault();
+
+            if (ReferenceEquals(change, null))
+            {
+                if (expected == 0)
+                {
+                    return;
+                }
+                Assert.Fail();
+            }
+
+            var value = change.Current.GetValueOrDefault();
+
+            if (orHigher)
+            {
+                Assert.IsTrue(value >= expected);
+            }
+            else
+            {
+                Assert.AreEqual(expected, value);
             }
         }
 

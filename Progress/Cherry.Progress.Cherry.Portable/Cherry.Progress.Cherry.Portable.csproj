@@ -34,10 +34,6 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
-    <ProjectReference Include="..\..\IoC\Cherry.IoC.Contracts.Portable\Cherry.IoC.Contracts.Portable.csproj">
-      <Project>{09FA70B5-96BA-40A3-94BD-F5E22E0821F4}</Project>
-      <Name>Cherry.IoC.Contracts.Portable</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Cherry.Progress.Contracts.Portable\Cherry.Progress.Contracts.Portable.csproj">
       <Project>{29973195-7948-411A-8EAE-1F1BB358DB05}</Project>
       <Name>Cherry.Progress.Contracts.Portable</Name>

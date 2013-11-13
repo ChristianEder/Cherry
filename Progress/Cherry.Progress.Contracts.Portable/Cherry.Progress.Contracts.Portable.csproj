@@ -40,6 +40,7 @@
     <Compile Include="IProgress.cs" />
     <Compile Include="IProgressDisplay.cs" />
     <Compile Include="IProgressService.cs" />
+    <Compile Include="ProgressExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
