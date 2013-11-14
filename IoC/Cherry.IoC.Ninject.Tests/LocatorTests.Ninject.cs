@@ -9,7 +9,7 @@ namespace Cherry.IoC.Tests
     {
         private IServiceRegistry CreateRegistry()
         {
-            return new NinjectServiceLocatorAndRegistry();
+            return new NinjectServiceRegistry();
         }
 
         private static void AssertTransitiveDependencyHasCorrectLocatorInjected(BarUsingSomething bar, IServiceLocator registeredIn, IServiceLocator resolvedFrom)

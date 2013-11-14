@@ -46,7 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NinjectServiceLocatorAndRegistry.cs" />
+    <Compile Include="KernelExtensions.cs" />
+    <Compile Include="NinjectServiceLocator.cs" />
+    <Compile Include="NinjectServiceRegistry.cs" />
     <Compile Include="IServiceRegistry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
