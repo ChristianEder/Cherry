@@ -1,8 +1,9 @@
 ﻿using System;
+using Cherry.IoC.Contracts.Portable;
 
 namespace Cherry.IoC.Cherry.Portable.Resolver
 {
-    public class SingletonResolver : IResolver
+    internal class SingletonResolver : IResolver
     {
         private readonly Type _targetType;
         private volatile object _instance;
@@ -13,8 +14,13 @@ namespace Cherry.IoC.Cherry.Portable.Resolver
             _targetType = targetType;
         }
 
-        public object Get(ICherryServiceLocatorAndRegistry original, ICherryServiceLocatorAndRegistry current)
+        public object Get(ICherryServiceLocatorAndRegistry original, ICherryServiceLocatorAndRegistry current, InjectionParameter[] parameters)
         {
+            if (parameters != null && parameters.Length > 0)
+            {
+                throw new ArgumentException(string.Format("Since \"{0}\" is a singleton instance, you cannot use parameters to resolve it.", _instance), "parameters");
+            }
+
             if (_instance != null)
             {
                 return _instance;
@@ -25,7 +31,7 @@ namespace Cherry.IoC.Cherry.Portable.Resolver
                 {
                     return _instance;
                 }
-                var instance = (new PerResolveResolver(_targetType)).Get(original, current);
+                var instance = (new PerResolveResolver(_targetType)).Get(original, current, parameters);
                 _instance = instance;
                 return instance;
             }

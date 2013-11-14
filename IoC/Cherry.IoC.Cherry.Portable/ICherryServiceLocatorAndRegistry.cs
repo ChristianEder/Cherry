@@ -4,9 +4,8 @@ using Cherry.IoC.Contracts.Portable;
 
 namespace Cherry.IoC.Cherry.Portable
 {
-    public interface ICherryServiceLocatorAndRegistry : IServiceRegistry, IServiceLocator
+    internal interface ICherryServiceLocatorAndRegistry : IServiceRegistry, IServiceLocator
     {
-        object Get(ICherryServiceLocatorAndRegistry originalLocator, Type serviceKey);
-        void Register(Type serviceKey, IResolver resolver);
+        object Get(ICherryServiceLocatorAndRegistry originalLocator, Type serviceKey, params InjectionParameter[] parameters);
     }
 }

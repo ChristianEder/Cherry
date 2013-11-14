@@ -48,7 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnityServiceLocatorAndRegistry.cs" />
+    <Compile Include="UnityServiceLocator.cs" />
+    <Compile Include="UnityServiceRegistry.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Cherry.IoC.Common.Portable\Cherry.IoC.Common.Portable.csproj">

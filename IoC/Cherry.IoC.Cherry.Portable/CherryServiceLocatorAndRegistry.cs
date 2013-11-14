@@ -17,7 +17,6 @@ namespace Cherry.IoC.Cherry.Portable
         public CherryServiceLocatorAndRegistry()
             : this(null)
         {
-
         }
 
         private CherryServiceLocatorAndRegistry(CherryServiceLocatorAndRegistry parent)
@@ -44,14 +43,6 @@ namespace Cherry.IoC.Cherry.Portable
             }
             var singletonInstanceResolver = new SingletonInstanceResolver(service);
             Register(serviceKey, singletonInstanceResolver);
-        }
-
-        public void Register(Type serviceKey, IResolver resolver)
-        {
-            lock (_registrations)
-            {
-                _registrations[serviceKey] = resolver;
-            }
         }
 
         public void Register(Type serviceKey, Type serviceType, bool singleton)
@@ -119,13 +110,13 @@ namespace Cherry.IoC.Cherry.Portable
             return _registrations.ContainsKey(serviceKey);
         }
 
-        public object Get(Type serviceKey)
+        public object Get(Type serviceKey, params InjectionParameter[] parameters)
         {
             if (ReferenceEquals(serviceKey, null))
             {
                 throw new ArgumentNullException("serviceKey", "The serviceKey must not be null");
             }
-            return Get(this, serviceKey);
+            return GetInternal(this, serviceKey, parameters);
         }
 
         public bool CanGet(Type serviceKey)
@@ -152,7 +143,13 @@ namespace Cherry.IoC.Cherry.Portable
             return false;
         }
 
-        public object Get(ICherryServiceLocatorAndRegistry originalLocator, Type serviceKey)
+        object ICherryServiceLocatorAndRegistry.Get(ICherryServiceLocatorAndRegistry originalLocator, Type serviceKey, params InjectionParameter[] parameters)
+        {
+            return GetInternal(originalLocator, serviceKey, parameters);
+        }
+
+        private object GetInternal(ICherryServiceLocatorAndRegistry originalLocator, Type serviceKey,
+            params InjectionParameter[] parameters)
         {
             if (ReferenceEquals(serviceKey, null))
             {
@@ -168,7 +165,7 @@ namespace Cherry.IoC.Cherry.Portable
             if (serviceKey.IsClass && !serviceKey.IsAbstract && !IsRegisteredRecursively(serviceKey))
             {
                 var perResolveResolver = new PerResolveResolver(serviceKey);
-                var instance = perResolveResolver.Get(originalLocator, this);
+                var instance = perResolveResolver.Get(originalLocator, this, parameters);
                 return instance;
             }
 
@@ -177,11 +174,11 @@ namespace Cherry.IoC.Cherry.Portable
             {
                 if (_parent != null)
                 {
-                    return _parent.Get(originalLocator, serviceKey);
+                    return _parent.GetInternal(originalLocator, serviceKey);
                 }
                 throw new ArgumentException(string.Format("The type {0} could not be resolved.", serviceKey), "serviceKey");
             }
-            return resolver.Get(originalLocator, this);
+            return resolver.Get(originalLocator, this, parameters);
         }
 
         public void Dispose()

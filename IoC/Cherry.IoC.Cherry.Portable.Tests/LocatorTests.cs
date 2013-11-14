@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Cherry.IoC.Contracts.Portable;
 using Cherry.IoC.Tests.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -92,6 +93,112 @@ namespace Cherry.IoC.Tests
             Assert.IsNotNull(something.Registry);
             Assert.AreSame(_locator, something.Locator);
             Assert.AreSame(_registry, something.Registry);
+        }
+
+        #endregion
+
+        #region Parametrized Gets
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception), AllowDerivedTypes = true)]
+        public void ParametrizedGetFailsOnSingletons()
+        {
+            _registry.Register<IBar, BarWithStringParameter>(true);
+            _locator.With("Hello World").Get<IBar>();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception), AllowDerivedTypes = true)]
+        public void ParametrizedGetFailsOnInstances()
+        {
+            _registry.Register<IBar>(new BarWithStringParameter("Something"));
+            _locator.With("Hello World").Get<IBar>();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception), AllowDerivedTypes = true)]
+        public void ParametrizedGetFailsWhenParameterIsMissing()
+        {
+            _registry.Register<IBar, BarWithStringParameter>(false);
+            var bar = _locator.Get<IBar>();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception), AllowDerivedTypes = true)]
+        public void ParametrizedGetFailsWhenParameterIsNotNamedCorrectly()
+        {
+            _registry.Register<IBar, BarWithStringParameter>(false);
+            var bar = _locator.With("notTheNameOfTheParameter", "Hello World").Get<IBar>();
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(Exception), AllowDerivedTypes = true)]
+        public void ParametrizedGetMultipleParametersMissingNamesFailing()
+        {
+            _registry.Register<IBar, BarWithMultipleParameters>(false);
+            _registry.Register<IFoo, Foo>(true);
+
+            var bar = _locator
+                .With("Hello")
+                .With(17)
+                .Get<IBar>();
+        }
+
+        [TestMethod]
+        public void ParametrizedGetSingleStringParameter()
+        {
+            _registry.Register<IBar, BarWithStringParameter>(false);
+            var bar = _locator.With("Hello World").Get<IBar>();
+
+            Assert.IsNotNull(bar);
+            Assert.IsInstanceOfType(bar, typeof(BarWithStringParameter));
+            Assert.AreEqual("Hello World", ((BarWithStringParameter)bar).Parameter);
+        }
+
+        [TestMethod]
+        public void ParametrizedGetMultipleParameters()
+        {
+            _registry.Register<IBar, BarWithMultipleParameters>(false);
+            _registry.Register<IFoo, Foo>(false);
+            var foo = new Foo();
+            var bar = _locator
+                .With("parameter1", foo)
+                .With("parameter2", "Hello")
+                .With("parameter3", "World")
+                .With("parameter4", 17)
+                .Get<IBar>();
+
+            Assert.IsNotNull(bar);
+            var typedBar = bar as BarWithMultipleParameters;
+            Assert.IsNotNull(typedBar);
+
+            Assert.AreSame(foo, typedBar.Parameter1);
+            Assert.AreEqual("Hello", typedBar.Parameter2);
+            Assert.AreEqual("World", typedBar.Parameter3);
+            Assert.AreEqual(17, typedBar.Parameter4);
+        }
+
+        [TestMethod]
+        public void ParametrizedGetMultipleParametersSomeOfThemInjected()
+        {
+            _registry.Register<IBar, BarWithMultipleParameters>(false);
+            _registry.Register<IFoo, Foo>(true);
+           
+            var bar = _locator
+                .With("parameter2", "Hello")
+                .With("parameter3", "World")
+                .With(17)
+                .Get<IBar>();
+
+            Assert.IsNotNull(bar);
+            var typedBar = bar as BarWithMultipleParameters;
+            Assert.IsNotNull(typedBar);
+
+            var foo = _locator.Get<IFoo>();
+            Assert.AreSame(foo, typedBar.Parameter1);
+            Assert.AreEqual("Hello", typedBar.Parameter2);
+            Assert.AreEqual("World", typedBar.Parameter3);
+            Assert.AreEqual(17, typedBar.Parameter4);
         }
 
         #endregion

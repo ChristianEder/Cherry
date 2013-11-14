@@ -4,9 +4,9 @@ namespace Cherry.IoC.Contracts.Portable
 {
     public static class ServiceLocatorExtensions
     {
-        public static TService Get<TService>(this IServiceLocator serviceLocator)
+        public static TService Get<TService>(this IServiceLocator serviceLocator, params InjectionParameter[] parameters)
         {
-            var service = serviceLocator.Get(typeof(TService));
+            var service = serviceLocator.Get(typeof(TService), parameters);
             return (TService)service;
         }
 
@@ -15,13 +15,13 @@ namespace Cherry.IoC.Contracts.Portable
             return serviceLocator.CanGet(typeof(TServiceKey));
         }
 
-        public static TService TryGet<TService>(this IServiceLocator serviceLocator)
+        public static TService TryGet<TService>(this IServiceLocator serviceLocator, params InjectionParameter[] parameters)
         {
             if (serviceLocator.CanGet<TService>())
             {
                 try
                 {
-                    return serviceLocator.Get<TService>();
+                    return serviceLocator.Get<TService>(parameters);
                 }
                 catch (Exception)
                 {
@@ -29,6 +29,30 @@ namespace Cherry.IoC.Contracts.Portable
                 }
             }
             return default(TService);
+        }
+
+        public static IServiceLocator With<TValue>(this IServiceLocator serviceLocator, TValue value)
+        {
+            var parametrizedServiceLocator = GetOrCreateParametrizedServiceLocator(serviceLocator);
+            return parametrizedServiceLocator.With(value);
+        }
+
+        public static IServiceLocator With<TValue>(this IServiceLocator serviceLocator, string key, TValue value)
+        {
+            var parametrizedServiceLocator = GetOrCreateParametrizedServiceLocator(serviceLocator);
+            return parametrizedServiceLocator.With(key, value);
+        }
+
+        private static IParametrizedServiceLocator GetOrCreateParametrizedServiceLocator(IServiceLocator serviceLocator)
+        {
+            if (ReferenceEquals(serviceLocator, null))
+            {
+                throw new ArgumentNullException("serviceLocator", "The serviceLocator must not be null");
+            }
+
+            var parametrizedServiceLocator = (serviceLocator as IParametrizedServiceLocator) ??
+                                             new ParametrizedServiceLocator(serviceLocator);
+            return parametrizedServiceLocator;
         }
     }
 }

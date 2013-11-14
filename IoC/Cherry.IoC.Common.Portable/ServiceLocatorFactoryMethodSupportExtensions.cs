@@ -49,7 +49,7 @@ namespace Cherry.IoC.Common.Portable
 
         private static Func<T> CreateFactoryMethod<T>(IServiceLocator locator)
         {
-            return locator.Get<T>;
+            return () => locator.Get<T>();
         } 
     }
 }

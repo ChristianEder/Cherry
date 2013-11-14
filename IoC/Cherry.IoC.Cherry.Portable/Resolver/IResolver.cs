@@ -1,9 +1,10 @@
 ﻿using System;
+using Cherry.IoC.Contracts.Portable;
 
 namespace Cherry.IoC.Cherry.Portable.Resolver
 {
-    public interface IResolver : IDisposable
+    internal interface IResolver : IDisposable
     {
-        object Get(ICherryServiceLocatorAndRegistry original, ICherryServiceLocatorAndRegistry current);
+        object Get(ICherryServiceLocatorAndRegistry original, ICherryServiceLocatorAndRegistry current, InjectionParameter[] parameters);
     }
 }
