@@ -20,7 +20,16 @@ namespace Cherry.IoC.Ninject
           private NinjectServiceRegistry(NinjectServiceRegistry parent)
         {
             _parent = parent;
-            _kernel = _parent != null ? new ChildKernel(_parent._kernel) : new StandardKernel();
+              if (_parent != null)
+              {
+                  var childKernel = new ChildKernel(_parent._kernel);
+                  _kernel = childKernel;
+                  _kernel.Bind<IChildKernel>().ToConstant(childKernel);
+              }
+              else
+              {
+                  _kernel = new StandardKernel();
+              }
               _locator = new NinjectServiceLocator(_kernel, _parent != null ? _parent._locator : null);
             _kernel.Bind<IServiceRegistry>().ToConstant(this);
             _kernel.Bind<IServiceLocator>().ToConstant(_locator);

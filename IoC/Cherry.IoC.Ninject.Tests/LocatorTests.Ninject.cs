@@ -2,11 +2,31 @@
 using Cherry.IoC.Ninject;
 using Cherry.IoC.Tests.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Ninject;
+using Ninject.Extensions.ChildKernel;
 
 namespace Cherry.IoC.Tests
 {
     public partial class LocatorTests
     {
+        [TestMethod]
+        public void ResolveUnityContainerFromLocator()
+        {
+            var childRegistry = _registry.CreateChildRegistry();
+
+            var rootKernel = _registry.Locator.Get<IKernel>();
+            var childKernelTyped = childRegistry.Locator.Get<IChildKernel>();
+            var childKernel = childRegistry.Locator.Get<IKernel>();
+
+            Assert.IsNotNull(rootKernel);
+            Assert.IsNotNull(childKernel);
+            Assert.IsNotNull(childKernelTyped);
+            Assert.AreSame(childKernel, childKernelTyped);
+            Assert.IsNotNull(childKernelTyped.ParentResolutionRoot);
+            Assert.AreNotSame(rootKernel, childKernel);
+            Assert.AreSame(rootKernel, childKernelTyped.ParentResolutionRoot);
+        }
+
         private IServiceRegistry CreateRegistry()
         {
             return new NinjectServiceRegistry();
