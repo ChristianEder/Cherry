@@ -42,7 +42,7 @@ namespace Cherry.IoC.Cherry.Portable
                 throw new ArgumentException("The service instance must be convertible to the type specified as serviceKey", "service");
             }
             var singletonInstanceResolver = new SingletonInstanceResolver(service);
-            Register(serviceKey, singletonInstanceResolver);
+            _registrations.Add(serviceKey, singletonInstanceResolver);
         }
 
         public void Register(Type serviceKey, Type serviceType, bool singleton)
@@ -73,7 +73,7 @@ namespace Cherry.IoC.Cherry.Portable
             {
                 resolver = new PerResolveResolver(serviceType);
             }
-            Register(serviceKey, resolver);
+            _registrations.Add(serviceKey, resolver);
         }
 
         public IServiceRegistry CreateChildRegistry()

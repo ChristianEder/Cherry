@@ -20,10 +20,10 @@
         }
 
         public static IServiceRegistry Load<TModule>(this IServiceRegistry registry)
-            where TModule : IModule, new()
+            where TModule : IModule
         {
-            registry.Load(new TModule());
-            return registry;
+            var module = (TModule)registry.Locator.Get(typeof(TModule));
+            return Load(registry, module);
         }
 
         public static IServiceRegistry Load<TModule>(this IServiceRegistry registry, TModule module)

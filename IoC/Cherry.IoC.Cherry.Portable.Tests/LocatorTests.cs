@@ -24,6 +24,20 @@ namespace Cherry.IoC.Tests
         #region General
 
         [TestMethod]
+        public void ResolveRegistry()
+        {
+            var registry = _locator.Get<IServiceRegistry>();
+            Assert.AreSame(_registry, registry);
+        }
+
+        [TestMethod]
+        public void ResolveLocator()
+        {
+            var locator = _locator.Get<IServiceLocator>();
+            Assert.AreSame(_locator, locator);
+        }
+
+        [TestMethod]
         public void ResolveClass()
         {
             var foo = _locator.Get<Foo>();
