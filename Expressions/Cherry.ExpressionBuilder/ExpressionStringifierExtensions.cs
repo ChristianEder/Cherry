@@ -23,6 +23,7 @@ namespace Cherry.Expressions
             var csc = new CSharpCodeProvider(new Dictionary<string, string>() { { "CompilerVersion", "v4.0" } });
             var parameters = new CompilerParameters(new[] { "mscorlib.dll", "System.Core.dll" }, Guid.NewGuid() + ".dll", false);
             parameters.GenerateExecutable = false;
+            parameters.GenerateInMemory = true;
             var sources = string.Format(@"using System.Linq;
               using System.Linq.Expressions;
             public class MyExpression {{

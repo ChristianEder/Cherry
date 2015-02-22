@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace Cherry.Expressions.Spec
 {
     [TestClass]
-    public class ExpressionBuilderSpec
+    public class ExpressionStringBuilderSpec
     {
         [TestMethod]
         public void Test()
@@ -14,7 +14,6 @@ namespace Cherry.Expressions.Spec
          //var ex = MyExpression.Build();
 
             var numbers = new[] { 1, 4, 6, 7 }.AsQueryable();
-            var otherNumbers = new[] { 1, 4, 6, 7 }.AsQueryable();
 
             TestExpression(() => 3);
             TestExpression(() => numbers.Sum(n => n < 5 && true ? (n + 1) : n), "var numbers = new[] { 1, 4, 6, 7 }.AsQueryable();");

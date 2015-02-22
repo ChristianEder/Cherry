@@ -48,7 +48,7 @@
     <Compile Include="Builders\MemberExpressionStringBuilder.cs" />
     <Compile Include="Builders\MethodCallExpressionStringBuilder.cs" />
     <Compile Include="Builders\UnaryExpressionStringBuilder.cs" />
-    <Compile Include="Spec\_ExpressionBuilderSpec.cs" />
+    <Compile Include="Spec\ExpressionStringBuilderSpec.cs" />
     <Compile Include="Builders\ConstantExpressionStringBuilder.cs" />
     <Compile Include="Builders\ExpressionStringBuilder.cs" />
     <Compile Include="ExpressionStringifierExtensions.cs" />
